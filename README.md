@@ -1,4 +1,5 @@
 # wireable
+[![javadoc](https://javadoc.io/badge2/cz.tvrzna/wireable/0.1.0/javadoc.svg)](https://javadoc.io/doc/cz.tvrzna/wireable/0.1.0) 
 Simple Java singleton dependency injection via Reflections.
 
 ## What is wireable good for?
@@ -9,6 +10,15 @@ Wireable allows to create very simple application context, that scans defined pa
 
 ## But why?
 Wireable is dependency-free with minimal size in units of kilobytes.
+
+## Installation
+```xml
+<dependency>
+    <groupId>cz.tvrzna</groupId>
+    <artifactId>wireable</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
 
 ## Example
 Try to image a simple HTTP server, that serves data from database.
