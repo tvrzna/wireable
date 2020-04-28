@@ -1,5 +1,6 @@
 package cz.tvrzna.wireable;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,6 +11,7 @@ import cz.tvrzna.wireable.annotations.OnCreate;
 import cz.tvrzna.wireable.annotations.OnStartup;
 import cz.tvrzna.wireable.annotations.Wireable;
 import cz.tvrzna.wireable.annotations.Wired;
+import cz.tvrzna.wireable.enums.PriorityLevel;
 import cz.tvrzna.wireable.exceptions.ApplicationContextException;
 
 /**
@@ -41,7 +43,8 @@ public final class ApplicationContext
 	 * These members are linked to {@link Wireable} classes, that were initialized
 	 * in previous step.<br>
 	 * Last two steps is running of {@link OnCreate} and {@link OnStartup}
-	 * annotated methods inside loaded classes.
+	 * annotated methods inside loaded classes. Since 0.2.0 priority level of these
+	 * methods is supported.
 	 *
 	 * @param strPackage
 	 *          the str package
@@ -76,21 +79,14 @@ public final class ApplicationContext
 
 				for (Object o : classContext.values())
 				{
-					for (Method method : Reflections.findAnnotatedMethods(o, OnCreate.class))
-					{
-						method.setAccessible(true);
-						method.invoke(o);
-					}
+					invokeMethodsByPriority(o, OnCreate.class);
 				}
 
 				for (Object o : classContext.values())
 				{
-					for (Method method : Reflections.findAnnotatedMethods(o, OnStartup.class))
-					{
-						method.setAccessible(true);
-						method.invoke(o);
-					}
+					invokeMethodsByPriority(o, OnStartup.class);
 				}
+
 				if (!classContext.isEmpty())
 				{
 					loaded = true;
@@ -99,6 +95,45 @@ public final class ApplicationContext
 			catch (Exception e)
 			{
 				throw new ApplicationContextException("Could not initialize services", e);
+			}
+		}
+	}
+
+	/**
+	 * Invoke methods of defined annotation class by predefined priority level.
+	 *
+	 * @param <T>
+	 *          the generic type
+	 * @param o
+	 *          the object with annotated methods
+	 * @param clazz
+	 *          the class of annotation
+	 * @throws Exception
+	 *           the exception
+	 */
+	private static <T extends Annotation> void invokeMethodsByPriority(Object o, Class<T> clazz) throws Exception
+	{
+		for (PriorityLevel priority : PriorityLevel.values())
+		{
+			for (Method method : Reflections.findAnnotatedMethods(o, clazz))
+			{
+				T anno = method.getAnnotation(clazz);
+				PriorityLevel annPriority = PriorityLevel.NORMAL;
+
+				if (anno instanceof OnCreate)
+				{
+					annPriority = ((OnCreate) anno).priority();
+				}
+				else if (anno instanceof OnStartup)
+				{
+					annPriority = ((OnStartup) anno).priority();
+				}
+
+				if (priority.equals(annPriority))
+				{
+					method.setAccessible(true);
+					method.invoke(o);
+				}
 			}
 		}
 	}

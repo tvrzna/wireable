@@ -7,6 +7,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import cz.tvrzna.wireable.enums.PriorityLevel;
+
 /**
  * This annotation defines methods, that are started after all {@link Wireable}
  * objects are initialized and all {@link OnCreate} methods are finished. These
@@ -21,4 +23,13 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 public @interface OnStartup
 {
+
+	/**
+	 * Priority.
+	 *
+	 * @since 0.2.0
+	 * @return the on create priority
+	 */
+	PriorityLevel priority() default PriorityLevel.NORMAL;
+
 }

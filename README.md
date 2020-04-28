@@ -1,5 +1,6 @@
 # wireable
-[![javadoc](https://javadoc.io/badge2/cz.tvrzna/wireable/0.1.0/javadoc.svg)](https://javadoc.io/doc/cz.tvrzna/wireable/0.1.0) 
+[![javadoc](https://javadoc.io/badge2/cz.tvrzna/wireable/0.1.0/javadoc.svg)](https://javadoc.io/doc/cz.tvrzna/wireable/0.1.0)
+
 Simple Java singleton dependency injection via Reflections.
 
 ## What is wireable good for?

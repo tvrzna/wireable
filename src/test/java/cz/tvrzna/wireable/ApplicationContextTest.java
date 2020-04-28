@@ -9,6 +9,7 @@ import cz.tvrzna.wireable.exceptions.ApplicationContextException;
 import cz.tvrzna.wireable.test.TestWireableClass;
 import cz.tvrzna.wireable.test.TestWireableClass2;
 import cz.tvrzna.wireable.test2.TestWireableClassWithException;
+import cz.tvrzna.wireable.test3.TestOnCreatePriority;
 
 public class ApplicationContextTest
 {
@@ -78,5 +79,15 @@ public class ApplicationContextTest
 	{
 		resetApplicationContext();
 		Assertions.assertThrows(ApplicationContextException.class, () -> ApplicationContext.init(TestWireableClassWithException.class.getPackage().getName()));
+	}
+
+	@Test
+	public void testOnCreatePriority() throws ApplicationContextException
+	{
+		resetApplicationContext();
+
+		ApplicationContext.init(TestOnCreatePriority.class.getPackage().getName());
+
+		Assertions.assertEquals(6, ApplicationContext.getInstance(TestOnCreatePriority.class).getRunCount());
 	}
 }
