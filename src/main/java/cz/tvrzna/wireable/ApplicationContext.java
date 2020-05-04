@@ -8,14 +8,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import cz.tvrzna.wireable.annotations.OnCreate;
 import cz.tvrzna.wireable.annotations.OnEvent;
 import cz.tvrzna.wireable.annotations.OnStartup;
+import cz.tvrzna.wireable.annotations.Unwireable;
 import cz.tvrzna.wireable.annotations.Wireable;
 import cz.tvrzna.wireable.annotations.Wired;
 import cz.tvrzna.wireable.enums.PriorityLevel;
 import cz.tvrzna.wireable.exceptions.ApplicationContextException;
+import cz.tvrzna.wireable.helpers.WireableWrapper;
 
 /**
  * The core <code>Wireable</code> class, that handles preinitialization all
@@ -31,7 +34,7 @@ import cz.tvrzna.wireable.exceptions.ApplicationContextException;
 public final class ApplicationContext
 {
 	private static boolean loaded = false;
-	private static Map<Class<?>, Object> classContext;
+	private static Map<Class<?>, WireableWrapper> classContext;
 	private static Map<String, List<Method>> eventContext;
 
 	/**
@@ -70,24 +73,24 @@ public final class ApplicationContext
 			{
 				for (Class<?> clazz : Reflections.scanPackage(strPackage))
 				{
-					if (clazz.isAnnotationPresent(Wireable.class))
+					if (clazz.isAnnotationPresent(Wireable.class) || clazz.isAnnotationPresent(Unwireable.class))
 					{
 						Constructor<?> constr = clazz.getDeclaredConstructor();
 						constr.setAccessible(true);
-						classContext.put(clazz, constr.newInstance());
+						classContext.put(clazz, new WireableWrapper(constr.newInstance(), clazz.isAnnotationPresent(Wireable.class)));
 					}
 				}
 
-				for (Object o : classContext.values())
+				for (Object o : getInstances())
 				{
 					for (Field field : Reflections.findAnnotatedFields(o, Wired.class))
 					{
 						field.setAccessible(true);
-						field.set(o, classContext.get(field.getType()));
+						field.set(o, getInstance(field.getType()));
 					}
 				}
 
-				for (Object o : classContext.values())
+				for (Object o : getInstances())
 				{
 					for (Method method : Reflections.findAnnotatedMethods(o, OnEvent.class))
 					{
@@ -99,12 +102,12 @@ public final class ApplicationContext
 					}
 				}
 
-				for (Object o : classContext.values())
+				for (Object o : getInstances())
 				{
 					invokeMethodsByPriority(o, OnCreate.class);
 				}
 
-				for (Object o : classContext.values())
+				for (Object o : getInstances())
 				{
 					invokeMethodsByPriority(o, OnStartup.class);
 				}
@@ -160,6 +163,11 @@ public final class ApplicationContext
 		}
 	}
 
+	private static List<Object> getInstances()
+	{
+		return classContext.values().stream().map(w -> w.getInstance()).collect(Collectors.toList());
+	}
+
 	/**
 	 * Gets the single instance of {@link Wireable} class, that is loaded in
 	 * <code>classContext</code>. This methods access classes loaded in context to
@@ -174,7 +182,12 @@ public final class ApplicationContext
 	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> clazz)
 	{
-		return (T) classContext.get(clazz);
+		WireableWrapper wrapper = classContext.get(clazz);
+		if (wrapper != null && wrapper.isWireable())
+		{
+			return (T) wrapper.getInstance();
+		}
+		return null;
 	}
 
 	/**
