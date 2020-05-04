@@ -13,25 +13,6 @@ public class ApplicationContextException extends Exception
 
 	/**
 	 * Instantiates a new application context exception.
-	 */
-	public ApplicationContextException()
-	{
-		super();
-	}
-
-	/**
-	 * Instantiates a new application context exception.
-	 *
-	 * @param message
-	 *          the message
-	 */
-	public ApplicationContextException(String message)
-	{
-		super(message);
-	}
-
-	/**
-	 * Instantiates a new application context exception.
 	 *
 	 * @param message
 	 *          the message

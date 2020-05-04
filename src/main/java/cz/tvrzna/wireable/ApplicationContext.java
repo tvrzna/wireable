@@ -4,10 +4,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cz.tvrzna.wireable.annotations.OnCreate;
+import cz.tvrzna.wireable.annotations.OnEvent;
 import cz.tvrzna.wireable.annotations.OnStartup;
 import cz.tvrzna.wireable.annotations.Wireable;
 import cz.tvrzna.wireable.annotations.Wired;
@@ -18,7 +21,9 @@ import cz.tvrzna.wireable.exceptions.ApplicationContextException;
  * The core <code>Wireable</code> class, that handles preinitialization all
  * {@link Wireable} classes, their dependency injection with {@link Wired}
  * annotation and runs their initialization methods. At first it runs
- * {@link OnCreate}, after them it runs {@link OnStartup}.
+ * {@link OnCreate}, after them it runs {@link OnStartup}.<br>
+ * Since 0.2.0 there are preloaded {@link OnEvent} methods, that could be fired
+ * with {@link #fireEvent(String, Object...)} method.
  *
  * @since 0.1.0
  * @author michalt
@@ -27,6 +32,7 @@ public final class ApplicationContext
 {
 	private static boolean loaded = false;
 	private static Map<Class<?>, Object> classContext;
+	private static Map<String, List<Method>> eventContext;
 
 	/**
 	 * Instantiates a new application context.
@@ -42,9 +48,12 @@ public final class ApplicationContext
 	 * All {@link Wireable} are checked for members with {@link Wired} annotation.
 	 * These members are linked to {@link Wireable} classes, that were initialized
 	 * in previous step.<br>
+	 * After classes initialization all methods with annotation {@link OnEvent}
+	 * are preloaded into <code>eventContext</code>. These method could be fired
+	 * by {@link #fireEvent(String, Object...)}<br>
 	 * Last two steps is running of {@link OnCreate} and {@link OnStartup}
-	 * annotated methods inside loaded classes. Since 0.2.0 priority level of these
-	 * methods is supported.
+	 * annotated methods inside loaded classes. Since 0.2.0 priority level of
+	 * these methods is supported.
 	 *
 	 * @param strPackage
 	 *          the str package
@@ -56,6 +65,7 @@ public final class ApplicationContext
 		if (!loaded)
 		{
 			classContext = new HashMap<>();
+			eventContext = new HashMap<>();
 			try
 			{
 				for (Class<?> clazz : Reflections.scanPackage(strPackage))
@@ -74,6 +84,18 @@ public final class ApplicationContext
 					{
 						field.setAccessible(true);
 						field.set(o, classContext.get(field.getType()));
+					}
+				}
+
+				for (Object o : classContext.values())
+				{
+					for (Method method : Reflections.findAnnotatedMethods(o, OnEvent.class))
+					{
+						OnEvent onEvent = method.getAnnotation(OnEvent.class);
+						if (onEvent.value() != null)
+						{
+							eventContext.computeIfAbsent(onEvent.value().toLowerCase(), k -> new ArrayList<>()).add(method);
+						}
 					}
 				}
 
@@ -153,5 +175,42 @@ public final class ApplicationContext
 	public static <T> T getInstance(Class<T> clazz)
 	{
 		return (T) classContext.get(clazz);
+	}
+
+	/**
+	 * Fire events, that are pre-loaded in <code>eventContext</code>. All possible
+	 * <code>params</code> are passed, but there is no argument type check, if
+	 * mismatch occurs, <code>ApplicationContextException</code> is thrown.
+	 *
+	 * @param eventName
+	 *          the event name
+	 * @param params
+	 *          the params
+	 * @throws ApplicationContextException
+	 *           the application context exception
+	 * @since 0.2.0
+	 */
+	public static void fireEvent(String eventName, Object... params) throws ApplicationContextException
+	{
+		if (eventName != null)
+		{
+			for (Method m : eventContext.get(eventName.toLowerCase()))
+			{
+				Object[] args = new Object[m.getParameterCount()];
+				for (int i = 0; i < (args.length > params.length ? params.length : args.length); i++)
+				{
+					args[i] = params[i];
+				}
+				try
+				{
+					m.setAccessible(true);
+					m.invoke(getInstance(m.getDeclaringClass()), args);
+				}
+				catch (Exception e)
+				{
+					throw new ApplicationContextException("Could not fire method ".concat(m.getName()), e);
+				}
+			}
+		}
 	}
 }

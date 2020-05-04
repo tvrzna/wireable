@@ -10,6 +10,7 @@ import cz.tvrzna.wireable.test.TestWireableClass;
 import cz.tvrzna.wireable.test.TestWireableClass2;
 import cz.tvrzna.wireable.test2.TestWireableClassWithException;
 import cz.tvrzna.wireable.test3.TestOnCreatePriority;
+import cz.tvrzna.wireable.test4.TestOnEvent;
 
 public class ApplicationContextTest
 {
@@ -89,5 +90,21 @@ public class ApplicationContextTest
 		ApplicationContext.init(TestOnCreatePriority.class.getPackage().getName());
 
 		Assertions.assertEquals(6, ApplicationContext.getInstance(TestOnCreatePriority.class).getRunCount());
+	}
+
+	@Test
+	public void testOnEvent() throws ApplicationContextException
+	{
+		resetApplicationContext();
+
+		ApplicationContext.init(TestOnEvent.class.getPackageName());
+		ApplicationContext.fireEvent(null);
+		ApplicationContext.fireEvent("event1", "value");
+		ApplicationContext.fireEvent("event2", "value", true);
+		Assertions.assertThrows(ApplicationContextException.class, () -> ApplicationContext.fireEvent("event3", "value", true));
+
+		Assertions.assertEquals(3, ApplicationContext.getInstance(TestOnEvent.class).getEvent1Count());
+		Assertions.assertEquals(2, ApplicationContext.getInstance(TestOnEvent.class).getEvent2Count());
+
 	}
 }
