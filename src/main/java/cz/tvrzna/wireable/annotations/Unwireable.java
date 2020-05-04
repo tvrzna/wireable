@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation defines classes, that are loaded into
- * <code>ApplicationContext</code>. These classes could not be injected into
+ * <code>WireableContext</code>. These classes could not be injected into
  * another <code>Wireable</code>.
  *
  * @since 0.2.0

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation defines methods, that are invoked on
- * <code>ApplicationContext.fireEvent()</code>.
+ * <code>WireableContext.fireEvent()</code>.
  *
  * @since 0.2.0
  * @author michalt

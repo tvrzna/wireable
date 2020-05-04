@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation defines members of {@link Wireable} classes, that are
- * injected from <code>ApplicationContext</code>. If this annotation is used in
+ * injected from <code>WireableContext</code>. If this annotation is used in
  * classes, that are not {@link Wireable}, they will not be injected.
  *
  * @since 0.1.0
