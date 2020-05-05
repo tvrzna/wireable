@@ -83,11 +83,7 @@ public final class WireableContext
 
 				for (Object o : getInstances())
 				{
-					for (Field field : Reflections.findAnnotatedFields(o, Wired.class))
-					{
-						field.setAccessible(true);
-						field.set(o, getInstance(field.getType()));
-					}
+					wireObjects(o);
 				}
 
 				for (Object o : getInstances())
@@ -229,6 +225,31 @@ public final class WireableContext
 					throw new WireableException("Could not fire method ".concat(m.getName()), e);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Wire all {@link Wireable} fields defined by {@link Wired} annotation in
+	 * object.
+	 *
+	 * @param o
+	 *          the o
+	 * @throws WireableException
+	 *           the wireable exception
+	 */
+	public static void wireObjects(Object o) throws WireableException
+	{
+		try
+		{
+			for (Field field : Reflections.findAnnotatedFields(o, Wired.class))
+			{
+				field.setAccessible(true);
+				field.set(o, getInstance(field.getType()));
+			}
+		}
+		catch (Exception e)
+		{
+			throw new WireableException("Could not wire instance", e);
 		}
 	}
 }

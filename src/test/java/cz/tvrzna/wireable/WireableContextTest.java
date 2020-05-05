@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import cz.tvrzna.wireable.exceptions.WireableException;
+import cz.tvrzna.wireable.test.TestWireObjectsClass;
 import cz.tvrzna.wireable.test.TestWireableClass;
 import cz.tvrzna.wireable.test.TestWireableClass2;
 import cz.tvrzna.wireable.test2.TestWireableClassWithException;
@@ -116,5 +117,18 @@ public class WireableContextTest
 		ApplicationContext.init(TestOnEvent.class.getPackageName());
 		ApplicationContext.fireEvent(null);
 		ApplicationContext.getInstance(TestOnEvent.class);
+	}
+
+	@Test
+	public void testWireObjects() throws WireableException
+	{
+		resetWireableContext();
+
+		TestWireObjectsClass test = new TestWireObjectsClass();
+		WireableContext.init(TestWireableClass.class.getPackage().getName());
+
+		test.testBefore();
+		WireableContext.wireObjects(test);
+		test.testAfter();
 	}
 }
