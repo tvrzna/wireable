@@ -98,7 +98,7 @@ public class WireableContextTest
 	{
 		resetWireableContext();
 
-		WireableContext.init(TestOnEvent.class.getPackageName());
+		WireableContext.init(TestOnEvent.class.getPackage().getName());
 		WireableContext.fireEvent(null);
 		WireableContext.fireEvent("event1", "value");
 		WireableContext.fireEvent("event2", "value", true);
@@ -114,7 +114,7 @@ public class WireableContextTest
 	{
 		resetWireableContext();
 
-		ApplicationContext.init(TestOnEvent.class.getPackageName());
+		ApplicationContext.init(TestOnEvent.class.getPackage().getName());
 		ApplicationContext.fireEvent(null);
 		ApplicationContext.getInstance(TestOnEvent.class);
 	}
