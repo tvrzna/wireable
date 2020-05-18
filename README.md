@@ -28,8 +28,8 @@ __Main.java__
 ```java
 package test.project;
 
-import cz.tvrzna.wireable.ApplicationContext;
-import cz.tvrzna.wireable.exceptions.ApplicationContextException;
+import cz.tvrzna.wireable.WireableContext;
+import cz.tvrzna.wireable.exceptions.WireableException;
 
 public class Main
 {
@@ -37,9 +37,9 @@ public class Main
 	{
 		try
 		{
-			ApplicationContext.init("test.project");
+			WireableContext.init("test.project");
 		}
-		catch (ApplicationContextException e)
+		catch (WireableException e)
 		{
 			e.printStackTrace();
 		}
@@ -53,6 +53,7 @@ package test.project;
 
 import cz.tvrzna.wireable.annotations.OnCreate;
 import cz.tvrzna.wireable.annotations.Wireable;
+import cz.tvrzna.wireable.enums.PriorityLevel;
 
 @Wireable
 public class DatabaseService
@@ -65,9 +66,20 @@ public class DatabaseService
 		data = new String[]	{ "First", "Second", "Third" };
 	}
 
+	@OnCreate(priority = PriorityLevel.LOW)
+	private void reinit()
+	{
+		data = new String[] { "First", "Second", "Third", "Fourth"};
+	}
+
 	public String[] getData()
 	{
 		return data;
+	}
+
+	public void removeUserSession(Long id)
+	{
+		// Remove token
 	}
 }
 
@@ -77,9 +89,12 @@ __WebserverService.java__
 ```java
 package test.project;
 
+import cz.tvrzna.wireable.WireableContext;
+import cz.tvrzna.wireable.annotations.OnEvent;
 import cz.tvrzna.wireable.annotations.OnStartup;
 import cz.tvrzna.wireable.annotations.Wireable;
 import cz.tvrzna.wireable.annotations.Wired;
+import cz.tvrzna.wireable.exceptions.WireableException;
 
 @Wireable
 public class WebserverService
@@ -94,16 +109,67 @@ public class WebserverService
 		// Start server
 	}
 
-	public Response handleRequest(HttpRequest request)
+	public Response handleRequest(HttpRequest request) throws WireableException
 	{
+		WireableContext.fireEvent("doLogout", 1200l);
 		return Response.ok(databaseService.getData()).build();
 	}
 }
 ```
 
+__WatcherService.java__
+```java
+package test.project;
+
+import cz.tvrzna.wireable.WireableContext;
+import cz.tvrzna.wireable.annotations.OnEvent;
+import cz.tvrzna.wireable.annotations.OnStartup;
+import cz.tvrzna.wireable.annotations.Unwireable;
+import cz.tvrzna.wireable.exceptions.WireableException;
+
+@Unwireable
+public class WatcherService
+{
+	@OnStartup
+	private void onStartup()
+	{
+		// Watch some data changes
+	}
+
+	@OnEvent("doLogout")
+	public void logout(Long id) throws WireableException
+	{
+		LateClass watcher = new LateClass();
+		WireableContext.wireObjects(watcher);
+		watcher.handleId(id);
+	}
+}
+```
+
+__LateClass.java__
+```java
+package test.project;
+
+import cz.tvrzna.wireable.annotations.Wired;
+
+public class LateClass
+{
+	@Wired
+	private DatabaseService databaseService;
+
+	public void handleId(Long id)
+	{
+		databaseService.removeUserSession(id);
+	}
+}
+
+```
+
 ### Explanation of example
  1. `ApplicationContext.init("test.project");` starts initialization of the ApplicationContext on the start of Main class and scans package `test.project`, which contains these classes.
- 2. `DatabaseService` and `WebserverService` are initialized as instance, since they have `@Wireable` annotation, and are put into `HashMap` in ApplicationContext. These classes needs to have the **constructor without arguments**.
- 3. `DatabaseService` and `WebserverService` are listed for `@Wired` annotation members. `WebserverService` has one, so it adds reference of `DatabaseService` from ApplicationContext on member named `databaseService`.
- 4. Both service classes are scanned for methods without arguments with annotation `@OnCreate`. `DatabaseService` has private method init(), so this method is invoked and variable `data` is set.
+ 2. `DatabaseService` and `WebserverService` are initialized as instance, since they have `@Wireable` or `@Unwireable` annotation, and are put into `HashMap` in ApplicationContext. These classes needs to have the **constructor without arguments**.
+ 3. `DatabaseService` and `WebserverService` are listed for `@Wired` annotation members. `WebserverService` has one, so it adds reference of `DatabaseService` from ApplicationContext on member named `databaseService`. `@Unwireable` clases could not by `@Wired`.
+ 4. Both service classes are scanned for methods without arguments with annotation `@OnCreate`, it is aware of OnCreate priority level. `DatabaseService` has private method init(), so this method is invoked and variable `data` is set.
  5. As it was in step before, classes are scanned again, but for methods without arguments with `@OnStartup` annotation. `WebserverService` has private method start(), so this method is invoked and server is started.
+ 6. If handleRequest method is called, it calls event `doLogout`. That invokes method annotated as `@OnEvent("doLogout")` with all passed arguments.
+ 7. When logout method of `WatcherService` is called, it creates new instance of `LateClass`. This method is out of context, but all `@Wired` annotated members, becames accessable. This kind of classes could have any constructor, but `@OnCreate`, `@OrStartup` nor `@OnEvent` methods are not invoked.
