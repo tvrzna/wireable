@@ -180,13 +180,39 @@ public final class WireableContext
 	 *          the clazz
 	 * @return single instance of Wireable from WireableContext
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> clazz)
 	{
+		return getInstance(clazz, true);
+	}
+
+	/**
+	 * Gets the single instance of {@link Wireable} or {@link Unwireable} class,
+	 * that is loaded in <code>classContext</code>. This methods access classes
+	 * loaded in context to any class.
+	 *
+	 * @param <T>
+	 *          the generic type
+	 * @param clazz
+	 *          the clazz
+	 * @return single instance of Wireable from WireableContext
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getInstance(Class<T> clazz, boolean onlyWireable)
+	{
 		WireableWrapper wrapper = classContext.get(clazz);
-		if (wrapper != null && wrapper.isWireable())
+		if (wrapper != null)
 		{
-			return (T) wrapper.getInstance();
+			if (onlyWireable)
+			{
+				if (wrapper.isWireable())
+				{
+					return (T) wrapper.getInstance();
+				}
+			}
+			else
+			{
+				return (T) wrapper.getInstance();
+			}
 		}
 		return null;
 	}
@@ -218,7 +244,7 @@ public final class WireableContext
 				try
 				{
 					m.setAccessible(true);
-					m.invoke(getInstance(m.getDeclaringClass()), args);
+					m.invoke(getInstance(m.getDeclaringClass(), false), args);
 				}
 				catch (Exception e)
 				{
