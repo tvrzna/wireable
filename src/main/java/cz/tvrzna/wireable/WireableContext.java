@@ -28,8 +28,8 @@ import cz.tvrzna.wireable.helpers.WireableWrapper;
  * Since 0.2.0 there are preloaded {@link OnEvent} methods, that could be fired
  * with {@link #fireEvent(String, Object...)} method.
  *
- * @since 0.2.0
  * @author michalt
+ * @since 0.2.0
  */
 public final class WireableContext
 {
@@ -194,6 +194,8 @@ public final class WireableContext
 	 *          the generic type
 	 * @param clazz
 	 *          the clazz
+	 * @param onlyWireable
+	 *          the only wireable
 	 * @return single instance of Wireable from WireableContext
 	 */
 	@SuppressWarnings("unchecked")
