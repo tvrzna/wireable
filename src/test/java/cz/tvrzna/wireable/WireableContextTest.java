@@ -129,17 +129,6 @@ public class WireableContextTest
 	}
 
 	@Test
-	@Deprecated
-	public void testApplicationContext() throws WireableException
-	{
-		resetWireableContext();
-
-		ApplicationContext.init(TestOnEvent.class.getPackage().getName());
-		ApplicationContext.fireEvent(null);
-		ApplicationContext.getInstance(TestOnEvent.class);
-	}
-
-	@Test
 	public void testWireObjects() throws WireableException
 	{
 		resetWireableContext();
