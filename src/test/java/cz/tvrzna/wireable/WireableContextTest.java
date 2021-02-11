@@ -131,8 +131,27 @@ public class WireableContextTest
 		WireableContext.init(TestWireableClass.class.getPackage().getName());
 
 		test.testBefore();
-		WireableContext.wireObjects(test);
+		WireableContext.wireObjects(test, test, test);
 		test.testAfter();
+	}
+
+	@Test()
+	public void testWireNoObjects() throws WireableException
+	{
+		resetWireableContext();
+
+		TestWireObjectsClass test = new TestWireObjectsClass();
+		WireableContext.init(TestWireableClass.class.getPackage().getName());
+
+		try
+		{
+			WireableContext.wireObjects(test, null, null);
+			Assertions.fail("Exception should have been thrown.");
+		}
+		catch (WireableException e)
+		{
+			// Expected behaviour
+		}
 	}
 
 	@Test

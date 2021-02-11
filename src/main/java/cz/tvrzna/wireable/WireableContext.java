@@ -293,26 +293,29 @@ public final class WireableContext
 
 	/**
 	 * Wire all {@link Wireable} fields defined by {@link Wired} annotation in
-	 * object.
+	 * object. Since 0.3.0 multiple objects could be wired.
 	 *
-	 * @param o
-	 *          the o
+	 * @param objects
+	 *          the objects
 	 * @throws WireableException
 	 *           the wireable exception
 	 */
-	public static void wireObjects(Object o) throws WireableException
+	public static void wireObjects(Object... objects) throws WireableException
 	{
-		try
+		for (Object o : objects)
 		{
-			for (Field field : Reflections.findAnnotatedFields(o, Wired.class))
+			try
 			{
-				field.setAccessible(true);
-				field.set(o, getInstance(field.getType()));
+				for (Field field : Reflections.findAnnotatedFields(o, Wired.class))
+				{
+					field.setAccessible(true);
+					field.set(o, getInstance(field.getType()));
+				}
 			}
-		}
-		catch (Exception e)
-		{
-			throw new WireableException("Could not wire instance", e);
+			catch (Exception e)
+			{
+				throw new WireableException("Could not wire instance", e);
+			}
 		}
 	}
 }
