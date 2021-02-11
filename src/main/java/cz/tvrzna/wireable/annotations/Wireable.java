@@ -21,4 +21,12 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface Wireable
 {
+
+	/**
+	 * Priority for interface.
+	 *
+	 * @since 0.3.0
+	 * @return the class
+	 */
+	Class<?> priorityFor() default Object.class;
 }

@@ -12,6 +12,9 @@ import cz.tvrzna.wireable.test.TestWireableClass2;
 import cz.tvrzna.wireable.test2.TestWireableClassWithException;
 import cz.tvrzna.wireable.test3.TestOnCreatePriority;
 import cz.tvrzna.wireable.test4.TestOnEvent;
+import cz.tvrzna.wireable.test5.ITestInterface;
+import cz.tvrzna.wireable.test5.ITestInterface2;
+import cz.tvrzna.wireable.test5.TestInterfaceA;
 
 public class WireableContextTest
 {
@@ -130,5 +133,17 @@ public class WireableContextTest
 		test.testBefore();
 		WireableContext.wireObjects(test);
 		test.testAfter();
+	}
+
+	@Test
+	public void testWireInterface() throws WireableException {
+		resetWireableContext();
+		WireableContext.init(TestInterfaceA.class.getPackage().getName());
+
+		ITestInterface first = WireableContext.getInstance(ITestInterface.class);
+		first.hello();
+
+		ITestInterface2 second = WireableContext.getInstance(ITestInterface2.class);
+		second.bye();
 	}
 }

@@ -35,6 +35,7 @@ public final class WireableContext
 {
 	private static boolean loaded = false;
 	private static Map<Class<?>, WireableWrapper> classContext;
+	private static Map<Class<?>, Class<?>> interfaceContext;
 	private static Map<String, List<Method>> eventContext;
 
 	/**
@@ -45,12 +46,16 @@ public final class WireableContext
 	}
 
 	/**
-	 * Inits Wireable in all classes, that are found in defined
+	 * Inits Wireable and Unwireable in all classes, that are found in defined
 	 * <code>strPackage</code>. Those classes, are stored in
 	 * <code>classContext</code>.<br>
-	 * All {@link Wireable} are checked for members with {@link Wired} annotation.
-	 * These members are linked to {@link Wireable} classes, that were initialized
-	 * in previous step.<br>
+	 * Since 0.3.0: If {@link Wireable} uses interface, these interfaces could be used for
+	 * targeting via {@link Wired}. If multiple classes uses same interface, it is
+	 * better to define {@link Wireable#priorityFor()} to define, which class
+	 * should be wired as default by interface. <br>
+	 * All {@link Wireable} and {@link Unwireable} are checked for members with
+	 * {@link Wired} annotation. These members are linked to {@link Wireable} and
+	 * {@link Unwireable} classes, that were initialized in previous step.<br>
 	 * After classes initialization all methods with annotation {@link OnEvent}
 	 * are preloaded into <code>eventContext</code>. These method could be fired
 	 * by {@link #fireEvent(String, Object...)}<br>
@@ -68,6 +73,7 @@ public final class WireableContext
 		if (!loaded)
 		{
 			classContext = new HashMap<>();
+			interfaceContext = new HashMap<>();
 			eventContext = new HashMap<>();
 			try
 			{
@@ -75,6 +81,14 @@ public final class WireableContext
 				{
 					if (clazz.isAnnotationPresent(Wireable.class) || clazz.isAnnotationPresent(Unwireable.class))
 					{
+						if (clazz.isAnnotationPresent(Wireable.class))
+						{
+							Wireable wireable = clazz.getAnnotation(Wireable.class);
+							if (wireable.priorityFor() != null && wireable.priorityFor().isInterface())
+							{
+								interfaceContext.put(wireable.priorityFor(), clazz);
+							}
+						}
 						Constructor<?> constr = clazz.getDeclaredConstructor();
 						constr.setAccessible(true);
 						classContext.put(clazz, new WireableWrapper(constr.newInstance(), clazz.isAnnotationPresent(Wireable.class)));
@@ -188,7 +202,10 @@ public final class WireableContext
 	/**
 	 * Gets the single instance of {@link Wireable} or {@link Unwireable} class,
 	 * that is loaded in <code>classContext</code>. This methods access classes
-	 * loaded in context to any class.
+	 * loaded in context to any class. If <code>clazz</code> is interface, it
+	 * looks for priority definition into <code>interfaceContext</code>, if
+	 * nothing is found, it iterates all known classes in
+	 * <code>classContext</code> to find suitable class.
 	 *
 	 * @param <T>
 	 *          the generic type
@@ -201,7 +218,25 @@ public final class WireableContext
 	@SuppressWarnings("unchecked")
 	public static <T> T getInstance(Class<T> clazz, boolean onlyWireable)
 	{
-		WireableWrapper wrapper = classContext.get(clazz);
+		Class<T> resultClazz = clazz;
+
+		if (clazz.isInterface())
+		{
+			resultClazz = (Class<T>) interfaceContext.get(clazz);
+			if (resultClazz == null)
+			{
+				for (Class<?> clz : classContext.keySet())
+				{
+					if (clazz.isAssignableFrom(clz))
+					{
+						resultClazz = (Class<T>) clz;
+						break;
+					}
+				}
+			}
+		}
+
+		WireableWrapper wrapper = classContext.get(resultClazz);
 		if (wrapper != null)
 		{
 			if (onlyWireable)

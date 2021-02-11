@@ -9,6 +9,9 @@ Almost everyone, who is used to dependency injections, likes the idea of injecti
 ## How does it works?
 Wireable allows to create very simple application context, that scans defined package (and its subpackages). All classes with annotation `@Wireable` are added into the mentioned application context as an instance. These classes will have injected all members with annotation `@Wired` with reflections and then all methods (without arguments) with annotations `@OnCreate` and `@OnStartup` are executed.
 
+## Interfaces as @Wired
+Since `0.3.0` interfaces are supported as @Wired classes. If multiple classes points to similar interface, it it better to specify in your `@Wireable` annotation the `priorityFor` value by interface class.
+
 ## But why?
 Wireable is dependency-free with minimal size in units of kilobytes.
 
@@ -173,3 +176,4 @@ public class LateClass
  5. As it was in step before, classes are scanned again, but for methods without arguments with `@OnStartup` annotation. `WebserverService` has private method start(), so this method is invoked and server is started.
  6. If handleRequest method is called, it calls event `doLogout`. That invokes method annotated as `@OnEvent("doLogout")` with all passed arguments.
  7. When logout method of `WatcherService` is called, it creates new instance of `LateClass`. This method is out of context, but all `@Wired` annotated members, becames accessable. This kind of classes could have any constructor, but `@OnCreate`, `@OrStartup` nor `@OnEvent` methods are not invoked.
+```
