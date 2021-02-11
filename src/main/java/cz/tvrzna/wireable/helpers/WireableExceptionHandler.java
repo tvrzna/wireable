@@ -1,4 +1,4 @@
-package cz.tvrzna.wireable;
+package cz.tvrzna.wireable.helpers;
 
 import cz.tvrzna.wireable.exceptions.WireableException;
 

@@ -18,6 +18,7 @@ import cz.tvrzna.wireable.annotations.Wireable;
 import cz.tvrzna.wireable.annotations.Wired;
 import cz.tvrzna.wireable.enums.PriorityLevel;
 import cz.tvrzna.wireable.exceptions.WireableException;
+import cz.tvrzna.wireable.helpers.WireableExceptionHandler;
 import cz.tvrzna.wireable.helpers.WireableWrapper;
 
 /**
