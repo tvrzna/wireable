@@ -49,10 +49,10 @@ public final class WireableContext
 	 * Inits Wireable and Unwireable in all classes, that are found in defined
 	 * <code>strPackage</code>. Those classes, are stored in
 	 * <code>classContext</code>.<br>
-	 * Since 0.3.0: If {@link Wireable} uses interface, these interfaces could be used for
-	 * targeting via {@link Wired}. If multiple classes uses same interface, it is
-	 * better to define {@link Wireable#priorityFor()} to define, which class
-	 * should be wired as default by interface. <br>
+	 * Since 0.3.0: If {@link Wireable} uses interface, these interfaces could be
+	 * used for targeting via {@link Wired}. If multiple classes uses same
+	 * interface, it is better to define {@link Wireable#priorityFor()} to define,
+	 * which class should be wired as default by interface. <br>
 	 * All {@link Wireable} and {@link Unwireable} are checked for members with
 	 * {@link Wired} annotation. These members are linked to {@link Wireable} and
 	 * {@link Unwireable} classes, that were initialized in previous step.<br>
@@ -289,6 +289,50 @@ public final class WireableContext
 				}
 			}
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see WireableContext#fireEventAsync(String, WireableExceptionHandler,
+	 * Object...)
+	 */
+	public static void fireEventAsync(String eventName, Object... params)
+	{
+		fireEventAsync(eventName, null, params);
+	}
+
+	/**
+	 * Fire asynchronous events, that are pre-loaded in <code>eventContext</code>.
+	 * All possible <code>params</code> are passed, but there is no argument type
+	 * check, if mismatch occurs, it tries to handle exception with
+	 * {@link WireableExceptionHandler} if is presented in params.
+	 *
+	 * @param eventName
+	 *          the event name
+	 * @param params
+	 *          the params
+	 * @since 0.3.0
+	 */
+	public static void fireEventAsync(String eventName, WireableExceptionHandler handler, Object... params)
+	{
+		new Thread(() -> {
+			try
+			{
+				fireEvent(eventName, params);
+			}
+			catch (WireableException e)
+			{
+				if (handler != null)
+				{
+					handler.handleException(e);
+				}
+				else
+				{
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 
 	/**

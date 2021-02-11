@@ -112,6 +112,23 @@ public class WireableContextTest
 	}
 
 	@Test
+	public void testOnEventAsync() throws WireableException, InterruptedException
+	{
+		resetWireableContext();
+
+		WireableContext.init(TestOnEvent.class.getPackage().getName());
+
+		WireableContext.fireEventAsync("event1", "value");
+		WireableContext.fireEventAsync("event2", (e) -> {
+			Assertions.fail("Unexpected error!");
+		}, "value", true);
+		WireableContext.fireEventAsync("event3", "value", true);
+		WireableContext.fireEventAsync("event3", (e) -> {
+			System.out.println(e.getMessage());
+		}, "value", true);
+	}
+
+	@Test
 	@Deprecated
 	public void testApplicationContext() throws WireableException
 	{
@@ -155,7 +172,8 @@ public class WireableContextTest
 	}
 
 	@Test
-	public void testWireInterface() throws WireableException {
+	public void testWireInterface() throws WireableException
+	{
 		resetWireableContext();
 		WireableContext.init(TestInterfaceA.class.getPackage().getName());
 
