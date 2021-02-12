@@ -103,6 +103,7 @@ public class WireableContextTest
 
 		WireableContext.init(TestOnEvent.class.getPackage().getName());
 		WireableContext.fireEvent(null);
+		WireableContext.fireEvent("unknown-event");
 		WireableContext.fireEvent("event1", "value");
 		WireableContext.fireEvent("event2", "value", true);
 		Assertions.assertThrows(WireableException.class, () -> WireableContext.fireEvent("event3", "value", true));

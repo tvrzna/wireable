@@ -270,7 +270,7 @@ public final class WireableContext
 	 */
 	public static void fireEvent(String eventName, Object... params) throws WireableException
 	{
-		if (eventName != null)
+		if (eventName != null && eventContext.containsKey(eventName.toLowerCase()))
 		{
 			for (Method m : eventContext.get(eventName.toLowerCase()))
 			{
