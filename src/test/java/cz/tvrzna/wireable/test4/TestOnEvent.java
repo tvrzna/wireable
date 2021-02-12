@@ -10,6 +10,7 @@ public class TestOnEvent
 {
 	private int event1Count = 0;
 	private int event2Count = 0;
+	private int event4Count = 0;
 
 	@OnEvent("event1")
 	private void event1_method1()
@@ -50,7 +51,13 @@ public class TestOnEvent
 	@OnEvent("event3")
 	private void event3_method1(String name, String bool)
 	{
-		Assertions.fail();		
+		Assertions.fail();
+	}
+
+	@OnEvent("event4a")
+	@OnEvent("event4b")
+	private void event4() {
+		event4Count++;
 	}
 
 	public int getEvent1Count()
@@ -61,6 +68,11 @@ public class TestOnEvent
 	public int getEvent2Count()
 	{
 		return event2Count;
+	}
+
+	public int getEvent4Count()
+	{
+		return event4Count;
 	}
 
 }

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import cz.tvrzna.wireable.annotations.OnCreate;
 import cz.tvrzna.wireable.annotations.OnEvent;
+import cz.tvrzna.wireable.annotations.OnEvents;
 import cz.tvrzna.wireable.annotations.OnStartup;
 import cz.tvrzna.wireable.annotations.Unwireable;
 import cz.tvrzna.wireable.annotations.Wireable;
@@ -103,6 +104,21 @@ public final class WireableContext
 
 				for (Object o : getInstances())
 				{
+					for (Method method : Reflections.findAnnotatedMethods(o, OnEvents.class))
+					{
+						OnEvents onEvents = method.getAnnotation(OnEvents.class);
+						if (onEvents.value() != null)
+						{
+							for (OnEvent onEvent : onEvents.value())
+							{
+								if (onEvent.value() != null)
+								{
+									eventContext.computeIfAbsent(onEvent.value().toLowerCase(), k -> new ArrayList<>()).add(method);
+								}
+							}
+						}
+					}
+
 					for (Method method : Reflections.findAnnotatedMethods(o, OnEvent.class))
 					{
 						OnEvent onEvent = method.getAnnotation(OnEvent.class);

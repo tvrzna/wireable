@@ -107,9 +107,12 @@ public class WireableContextTest
 		WireableContext.fireEvent("event1", "value");
 		WireableContext.fireEvent("event2", "value", true);
 		Assertions.assertThrows(WireableException.class, () -> WireableContext.fireEvent("event3", "value", true));
+		WireableContext.fireEvent("event4a");
+		WireableContext.fireEvent("event4b");
 
 		Assertions.assertEquals(3, WireableContext.getInstance(TestOnEvent.class).getEvent1Count());
 		Assertions.assertEquals(2, WireableContext.getInstance(TestOnEvent.class).getEvent2Count());
+		Assertions.assertEquals(2, WireableContext.getInstance(TestOnEvent.class).getEvent4Count());
 	}
 
 	@Test
