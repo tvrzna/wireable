@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cz.tvrzna</groupId>
 	<artifactId>wireable</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 
 	<name>wireable</name>
 	<description>Simple Java singleton dependency injection via Reflections.</description>

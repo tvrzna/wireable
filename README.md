@@ -1,5 +1,8 @@
 # wireable
-[![javadoc](https://javadoc.io/badge2/cz.tvrzna/wireable/0.2.0/javadoc.svg)](https://javadoc.io/doc/cz.tvrzna/wireable/0.2.0)
+[![Release](https://img.shields.io/github/release/tvrzna/wireable.svg)](https://github.com/tvrzna/wireable/releases/latest)
+[![javadoc](https://javadoc.io/badge2/cz.tvrzna/wireable/0.3.0/javadoc.svg)](https://javadoc.io/doc/cz.tvrzna/wireable/0.3.0)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tvrzna/wireable/Build)](https://github.com/tvrzna/wireable/actions?query=workflow:Build)
+[![GitHub](https://img.shields.io/github/license/tvrzna/wireable)](https://github.com/tvrzna/wireable)
 
 Simple Java singleton dependency injection via Reflections.
 
