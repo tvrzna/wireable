@@ -23,7 +23,7 @@ Wireable is dependency-free with minimal size in units of kilobytes.
 <dependency>
     <groupId>cz.tvrzna</groupId>
     <artifactId>wireable</artifactId>
-    <version>0.1.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
