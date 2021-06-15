@@ -1,6 +1,9 @@
 package cz.tvrzna.wireable;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,9 +26,13 @@ public class WireableContextTest
 	{
 		try
 		{
-			Field fLoaded = WireableContext.class.getDeclaredField("loaded");
+			Method mContainer = WireableContext.class.getDeclaredMethod("getInstance");
+			mContainer.setAccessible(true);
+			WireableContainer container = (WireableContainer) mContainer.invoke(null);
+
+			Field fLoaded = WireableContainer.class.getDeclaredField("loaded");
 			fLoaded.setAccessible(true);
-			fLoaded.set(null, false);
+			fLoaded.set(container, false);
 		}
 		catch (Exception e)
 		{
@@ -57,7 +64,7 @@ public class WireableContextTest
 		resetWireableContext();
 		WireableContext.init(TestWireableClass.class.getPackage().getName());
 
-		Assertions.assertTrue(WireableContext.getInstance(TestWireableClass.class).testMethod());
+		Assertions.assertTrue(WireableContext.getInstance(TestWireableClass.class, true).testMethod());
 	}
 
 	@Test
@@ -175,5 +182,18 @@ public class WireableContextTest
 
 		ITestInterface2 second = WireableContext.getInstance(ITestInterface2.class);
 		second.bye();
+	}
+
+	@Test
+	public void testNewInstance() throws WireableException {
+		resetWireableContext();
+
+		WireableContainer container = WireableContext.createAndInit(TestInterfaceA.class.getPackage().getName());
+		WireableContainer container2 = WireableContext.create();
+
+		container.getInstance(ITestInterface.class).hello();
+		container.getInstance(ITestInterface2.class).bye();
+
+		assertNull(container2.getInstance(ITestInterface.class));
 	}
 }
