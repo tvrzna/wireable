@@ -8,7 +8,7 @@ import cz.tvrzna.wireable.annotations.Wireable;
 import cz.tvrzna.wireable.annotations.Wired;
 import cz.tvrzna.wireable.enums.PriorityLevel;
 
-@Wireable
+@Wireable(priority = PriorityLevel.HIGH)
 public class TestWireableClass
 {
 	@Wired

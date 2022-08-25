@@ -83,17 +83,22 @@ public class WireableContainer
 				{
 					if (clazz.isAnnotationPresent(Wireable.class) || clazz.isAnnotationPresent(Unwireable.class))
 					{
+						PriorityLevel priorityLevel = PriorityLevel.NORMAL;
 						if (clazz.isAnnotationPresent(Wireable.class))
 						{
 							Wireable wireable = clazz.getAnnotation(Wireable.class);
+							priorityLevel = wireable.priority();
 							if (wireable.priorityFor() != null && wireable.priorityFor().isInterface())
 							{
 								interfaceContext.put(wireable.priorityFor(), clazz);
 							}
+						} else if (clazz.isAnnotationPresent(Unwireable.class)) {
+							Unwireable unwireable = clazz.getAnnotation(Unwireable.class);
+							priorityLevel = unwireable.priority();
 						}
 						Constructor<?> constr = clazz.getDeclaredConstructor();
 						constr.setAccessible(true);
-						classContext.put(clazz, new WireableWrapper(constr.newInstance(), clazz.isAnnotationPresent(Wireable.class)));
+						classContext.put(clazz, new WireableWrapper(constr.newInstance(), clazz.isAnnotationPresent(Wireable.class), priorityLevel));
 					}
 				}
 
@@ -197,7 +202,7 @@ public class WireableContainer
 	 */
 	private List<Object> getInstances()
 	{
-		return classContext.values().stream().map(w -> w.getInstance()).collect(Collectors.toList());
+		return classContext.values().stream().sorted((a, b) -> a.getPriorityLevel().compareTo(b.getPriorityLevel())).map(w -> w.getInstance()).collect(Collectors.toList());
 	}
 
 	/**

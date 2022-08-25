@@ -1,9 +1,11 @@
 package cz.tvrzna.wireable.helpers;
 
+import cz.tvrzna.wireable.enums.PriorityLevel;
+
 /**
  * The Class WireableWrapper encapsulates instances of <code>Wireable</code>
  * classes.
- * 
+ *
  * @since 0.2.0
  * @author michalt
  */
@@ -11,6 +13,7 @@ public class WireableWrapper
 {
 	private final Object instance;
 	private final boolean wireable;
+	private final PriorityLevel priorityLevel;
 
 	/**
 	 * Instantiates a new wireable wrapper.
@@ -20,10 +23,11 @@ public class WireableWrapper
 	 * @param wireable
 	 *          the wireable
 	 */
-	public WireableWrapper(Object instance, boolean wireable)
+	public WireableWrapper(Object instance, boolean wireable, PriorityLevel priorityLevel)
 	{
 		this.instance = instance;
 		this.wireable = wireable;
+		this.priorityLevel = priorityLevel;
 	}
 
 	/**
@@ -44,5 +48,16 @@ public class WireableWrapper
 	public boolean isWireable()
 	{
 		return wireable;
+	}
+
+	/**
+	 * Gets the priority level.
+	 *
+	 * @return the priority level
+	 * @since 0.4.0
+	 */
+	public PriorityLevel getPriorityLevel()
+	{
+		return priorityLevel;
 	}
 }
