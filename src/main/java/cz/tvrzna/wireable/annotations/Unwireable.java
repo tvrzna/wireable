@@ -26,7 +26,7 @@ public @interface Unwireable
 	/**
 	 * Priority level defines order in which is classes loaded/handled.
 	 *
-	 * @since 0.4.0
+	 * @since 0.3.1
 	 * @return the priority level
 	 */
 	PriorityLevel priority() default PriorityLevel.NORMAL;
