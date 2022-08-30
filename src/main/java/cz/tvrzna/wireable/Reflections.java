@@ -99,7 +99,7 @@ public final class Reflections
 	public static Class<?>[] scanPackage(String packageName) throws ClassNotFoundException, IOException
 	{
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		String path = packageName.replace(".", File.separator);
+		String path = packageName.replace(".", "/");
 		File baseDir = new File(classLoader.getResource(path).getFile());
 		List<Class<?>> classes = new ArrayList<>();
 		if (baseDir.isDirectory())
@@ -170,7 +170,7 @@ public final class Reflections
 			JarEntry entry = entries.nextElement();
 			if (entry.getName().contains(path) && entry.getName().endsWith(".class"))
 			{
-				String className = entry.getName().replace(File.separator, ".").substring(0, entry.getName().length() - 6);
+				String className = entry.getName().replace("/", ".").substring(0, entry.getName().length() - 6);
 				classes.add(Class.forName(className));
 			}
 		}
