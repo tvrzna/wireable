@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -100,7 +102,7 @@ public final class Reflections
 	{
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		String path = packageName.replace(".", "/");
-		File baseDir = new File(classLoader.getResource(path).getFile());
+		File baseDir = new File(URLDecoder.decode(classLoader.getResource(path).getPath(), StandardCharsets.UTF_8.name()));
 		List<Class<?>> classes = new ArrayList<>();
 		if (baseDir.isDirectory())
 		{
