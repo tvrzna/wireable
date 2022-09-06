@@ -342,6 +342,8 @@ public class WireableContainer
 	 *
 	 * @param eventName
 	 *          the event name
+	 * @param handler
+	 *          the handler
 	 * @param params
 	 *          the params
 	 * @since 0.3.0

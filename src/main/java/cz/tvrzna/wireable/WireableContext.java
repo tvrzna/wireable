@@ -54,8 +54,11 @@ public final class WireableContext
 	/**
 	 * Creates and initializes new {@link WireableContainer}.
 	 *
+	 * @param strPackage
+	 *          the str package
 	 * @return the wireable container
 	 * @throws WireableException
+	 *           the wireable exception
 	 * @since 0.4.0
 	 */
 	public static WireableContainer createAndInit(String strPackage) throws WireableException
@@ -153,8 +156,12 @@ public final class WireableContext
 	}
 
 	/**
-	 * (non-Javadoc)
+	 * (non-Javadoc).
 	 *
+	 * @param eventName
+	 *          the event name
+	 * @param params
+	 *          the params
 	 * @see WireableContext#fireEventAsync(String, WireableExceptionHandler,
 	 *      Object...)
 	 */
