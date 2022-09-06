@@ -22,6 +22,8 @@ public class WireableWrapper
 	 *          the instance
 	 * @param wireable
 	 *          the wireable
+	 * @param priorityLevel
+	 *          the priority level
 	 */
 	public WireableWrapper(Object instance, boolean wireable, PriorityLevel priorityLevel)
 	{
