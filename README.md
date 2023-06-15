@@ -1,6 +1,6 @@
 # wireable
 [![Release](https://img.shields.io/github/release/tvrzna/wireable.svg)](https://github.com/tvrzna/wireable/releases/latest)
-[![javadoc](https://javadoc.io/badge2/cz.tvrzna/wireable/0.3.3/javadoc.svg)](https://javadoc.io/doc/cz.tvrzna/wireable/0.3.3)
+[![javadoc](https://javadoc.io/badge2/cz.tvrzna/wireable/0.3.4/javadoc.svg)](https://javadoc.io/doc/cz.tvrzna/wireable/0.3.4)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/tvrzna/wireable/.github/workflows/maven.yml?branch=master&style=flat-square)](https://github.com/tvrzna/wireable/actions?query=workflow:Build)
 [![GitHub](https://img.shields.io/github/license/tvrzna/wireable)](https://github.com/tvrzna/wireable)
 
@@ -23,7 +23,7 @@ Wireable is dependency-free with minimal size in units of kilobytes.
 <dependency>
     <groupId>cz.tvrzna</groupId>
     <artifactId>wireable</artifactId>
-    <version>0.3.3</version>
+    <version>0.3.4</version>
 </dependency>
 ```
 
