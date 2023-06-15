@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -114,6 +115,7 @@ public final class Reflections
 			classes.addAll(findClasses(jarFile, packageName, path));
 			jarFile.close();
 		}
+		classes.sort(Comparator.comparing(Class::getName, Comparator.naturalOrder()));
 		return classes.toArray(new Class[classes.size()]);
 	}
 
