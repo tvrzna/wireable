@@ -172,9 +172,9 @@ public class LateClass
 ```
 
 ### Explanation of example
- 1. `ApplicationContext.init("test.project");` starts initialization of the ApplicationContext on the start of Main class and scans package `test.project`, which contains these classes.
- 2. `DatabaseService` and `WebserverService` are initialized as instance, since they have `@Wireable` or `@Unwireable` annotation, and are put into `HashMap` in ApplicationContext. These classes needs to have the **constructor without arguments**.
- 3. `DatabaseService` and `WebserverService` are listed for `@Wired` annotation members. `WebserverService` has one, so it adds reference of `DatabaseService` from ApplicationContext on member named `databaseService`. `@Unwireable` clases could not by `@Wired`.
+ 1. `WireableContext.init("test.project");` starts initialization of the WireableContext on the start of Main class and scans package `test.project`, which contains these classes.
+ 2. `DatabaseService` and `WebserverService` are initialized as instance, since they have `@Wireable` or `@Unwireable` annotation, and are put into `HashMap` in WireableContext. These classes needs to have the **constructor without arguments**.
+ 3. `DatabaseService` and `WebserverService` are listed for `@Wired` annotation members. `WebserverService` has one, so it adds reference of `DatabaseService` from WireableContext on member named `databaseService`. `@Unwireable` clases could not by `@Wired`.
  4. Both service classes are scanned for methods without arguments with annotation `@OnCreate`, it is aware of OnCreate priority level. `DatabaseService` has private method init(), so this method is invoked and variable `data` is set.
  5. As it was in step before, classes are scanned again, but for methods without arguments with `@OnStartup` annotation. `WebserverService` has private method start(), so this method is invoked and server is started.
  6. If handleRequest method is called, it calls event `doLogout`. That invokes method annotated as `@OnEvent("doLogout")` with all passed arguments.
